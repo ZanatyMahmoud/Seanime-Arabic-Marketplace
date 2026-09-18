@@ -1,0 +1,500 @@
+[
+  {
+    "id": "account-switcher",
+    "name": "Account Switcher",
+    "version": "1.0.0",
+    "author": "FracturedSora & Pal",
+    "description": "Allows you to switch between multiple AniList accounts swiftly",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/FracturedSora/Seanime-Account-Switcher/refs/heads/main/AccountSwitcher.json",
+    "payloadURI": "https://raw.githubusercontent.com/FracturedSora/Seanime-Account-Switcher/refs/heads/main/AccountSwitcher.js",
+    "icon": "https://anilist.co/img/icons/android-chrome-512x512.png"
+  },
+  {
+    "id": "anilist-discussions",
+    "name": "AniList Discussions",
+    "author": "Bas1874",
+    "description": "Read/Post AniList discussions.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/anilist-discussion/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "anime-notes",
+    "name": "Anime Notes",
+    "author": "Faddix",
+    "description": "Add personal notes to anime entries.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/faddix/anime-notes/main/anime-notes.json"
+  },
+  {
+    "id": "animethemes",
+    "name": "AnimeThemes Player",
+    "author": "jabifx",
+    "description": "Anime opening/ending player.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/AnimeThemes/manifest.json"
+  },
+  {
+    "id": "custom-banner-images",
+    "name": "Custom Banner Images",
+    "author": "Seanime",
+    "description": "Customize banner images.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/main/plugins/custom-banner-images/custom-banner-images.json"
+  },
+  {
+    "id": "custom-cover-images",
+    "name": "Custom Cover Images",
+    "author": "Seanime",
+    "description": "Customize cover images.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/main/plugins/custom-cover-images/custom-cover-images.json"
+  },
+  {
+    "id": "Dub-Schedule",
+    "name": "Dub Schedule",
+    "author": "Bas1874",
+    "description": "Adds dubbed anime to schedule.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/Dub-Schedule-Seanime/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "hide-anime-spoilers-seanime",
+    "name": "Hide Anime Spoilers",
+    "author": "Seanime",
+    "description": "Hide anime spoilers.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/main/plugins/hide-spoilers/hide-anime-spoilers.json"
+  },
+  {
+    "id": "ui-translation",
+    "name": "UI Translation",
+    "author": "jabifx",
+    "description": "Translates Seanime UI.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/UI-Translation/manifest.json"
+  },
+  {
+    "id": "Watch-Next",
+    "name": "Watch Next",
+    "author": "bas1874",
+    "description": "Create an ordered watch-next list.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/Watch-Next-Seanime/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "watch-order",
+    "name": "Watch Order",
+    "author": "Bas1874",
+    "description": "Displays anime watch order.",
+    "type": "plugin",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/Watch-Order-Seanime/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "al-3asq",
+    "name": "3asq",
+    "author": "Bruuhim",
+    "description": "Arabic manga provider for 3asq.org.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "ar",
+    "manifestURI": "https://raw.githubusercontent.com/bruuhim/3asq-extension/main/src/3asq.json"
+  },
+  {
+    "id": "mangabuddy",
+    "name": "MangaBuddy",
+    "author": "pal",
+    "description": "MangaBuddy provider.",
+    "type": "manga-provider",
+    "language": "javascript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Pal-droid/Seanime-Providers/main/src/manga/mangabuddy/manifest.json"
+  },
+  {
+    "id": "mangadex",
+    "name": "Mangadex",
+    "author": "kiko",
+    "description": "MangaDex provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/HyperKiko/seanime-extensions/main/src/mangadex/mangadex.json"
+  },
+  {
+    "id": "mangafire",
+    "name": "MangaFire",
+    "author": "jabifx",
+    "description": "Multi-language manga provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/MangaFire/manifest.json"
+  },
+  {
+    "id": "mangafreak",
+    "name": "MangaFreak",
+    "author": "pal",
+    "description": "MangaFreak provider.",
+    "type": "manga-provider",
+    "language": "javascript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Pal-droid/Seanime-Providers/refs/heads/main/src/manga/mangafreak/manifest.json"
+  },
+  {
+    "id": "mangapark",
+    "name": "MangaPark",
+    "author": "ari___",
+    "description": "MangaPark provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Ari-03/mangapark/refs/heads/main/mangapark.json"
+  },
+  {
+    "id": "mangapill",
+    "name": "Mangapill",
+    "author": "Seanime",
+    "description": "Mangapill provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/manga-providers/mangapill/mangapill.json",
+    "version": "1.0.0"
+  },
+  {
+    "id": "weebcentral",
+    "name": "WeebCentral",
+    "author": "Seanime",
+    "description": "WeebCentral provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/manga-providers/weebcentral/weebcentral.json"
+  },
+  {
+    "id": "weebdex",
+    "name": "WeebDex",
+    "author": "ari___",
+    "description": "WeebDex provider.",
+    "type": "manga-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Ari-03/weebdex/refs/heads/main/weebdex.json"
+  },
+  {
+    "id": "arabic-anime3rb",
+    "name": "Anime3rb",
+    "description": "Arabic anime streaming provider for Seanime (Anime3rb).",
+    "version": "0.1.1",
+    "author": "ZanatyMahmoud",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "ar",
+    "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/Anime3rb/manifest-v0.1.1.json",
+    "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/Anime3rb/provider-v0.1.1.ts",
+    "workingTag": false,
+    "brokenTag": false,
+    "deprecatedTag": false,
+    "userConfig": {
+      "requiresConfig": false,
+      "version": 1,
+      "fields": [
+        {
+          "name": "baseUrl",
+          "label": "Base URL",
+          "type": "text",
+          "default": "https://anime3rb.com"
+        }
+      ]
+    },
+    "metadata": {
+      "fallbackDomains": [
+        "https://anime3rb.com"
+      ],
+      "verification": "unverified-until-live-stream-test"
+    }
+  },
+  {
+    "id": "arabic-anime4up",
+    "name": "Anime4Up",
+    "description": "Arabic anime streaming provider for Seanime (Anime4Up).",
+    "version": "0.1.6",
+    "author": "ZanatyMahmoud",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "ar",
+    "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/Anime4Up/manifest-v0.1.6.json",
+    "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/Anime4Up/provider-v0.1.6.ts",
+    "workingTag": false,
+    "brokenTag": false,
+    "deprecatedTag": false,
+    "userConfig": {
+      "requiresConfig": false,
+      "version": 1,
+      "fields": [
+        {
+          "name": "baseUrl",
+          "label": "Base URL",
+          "type": "text",
+          "default": "https://w1.anime4up.rest"
+        }
+      ]
+    },
+    "metadata": {
+      "fallbackDomains": [
+        "https://w1.anime4up.rest"
+      ],
+      "verification": "unverified-until-live-stream-test"
+    }
+  },
+  {
+    "id": "arabic-animeblkom",
+    "name": "AnimeBlkom",
+    "description": "Arabic anime streaming provider for Seanime (AnimeBlkom).",
+    "version": "0.1.1",
+    "author": "ZanatyMahmoud",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "ar",
+    "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/AnimeBlkom/manifest-v0.1.1.json",
+    "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/AnimeBlkom/provider-v0.1.1.ts",
+    "workingTag": false,
+    "brokenTag": false,
+    "deprecatedTag": false,
+    "userConfig": {
+      "requiresConfig": false,
+      "version": 1,
+      "fields": [
+        {
+          "name": "baseUrl",
+          "label": "Base URL",
+          "type": "text",
+          "default": "https://animeblkom.net"
+        }
+      ]
+    },
+    "metadata": {
+      "fallbackDomains": [
+        "https://animeblkom.net",
+        "https://animeblkom.tv",
+        "https://blkom.com"
+      ],
+      "verification": "unverified-until-live-stream-test"
+    }
+  },
+  {
+    "id": "arabic-witanime",
+    "name": "WitAnime",
+    "description": "Arabic anime streaming provider for Seanime (WitAnime).",
+    "version": "0.1.1",
+    "author": "ZanatyMahmoud",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "ar",
+    "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/WitAnime/manifest-v0.1.1.json",
+    "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/WitAnime/provider-v0.1.1.ts",
+    "workingTag": false,
+    "brokenTag": false,
+    "deprecatedTag": false,
+    "userConfig": {
+      "requiresConfig": false,
+      "version": 1,
+      "fields": [
+        {
+          "name": "baseUrl",
+          "label": "Base URL",
+          "type": "text",
+          "default": "https://witanime.cyou"
+        }
+      ]
+    },
+    "metadata": {
+      "fallbackDomains": [
+        "https://witanime.cyou"
+      ],
+      "verification": "unverified-until-live-stream-test"
+    }
+  },
+  {
+    "id": "animeflv",
+    "name": "AnimeFLV",
+    "author": "jabifx",
+    "description": "Spanish streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "es",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/AnimeFLV/manifest.json"
+  },
+  {
+    "id": "animekai",
+    "name": "AnimeKai",
+    "author": "kRYstall9",
+    "description": "English streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/kRYstall9/Seanime-streaming-providers/refs/heads/main/src/AnimeKai/manifest.json"
+  },
+  {
+    "id": "anizone",
+    "name": "AniZone",
+    "author": "jabifx",
+    "description": "Multi-language streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/AniZone/manifest.json"
+  },
+  {
+    "id": "gojowtf",
+    "name": "GojoWtf",
+    "author": "kRYstall9",
+    "description": "English streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/kRYstall9/Seanime-streaming-providers/refs/heads/main/src/GojoWtf/manifest.json"
+  },
+  {
+    "id": "hianime",
+    "name": "HiAnime",
+    "author": "Thekingcrusher",
+    "description": "Sub/dub streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Thekingcrusher/online-stream-providers/refs/heads/main/hianime/manifest.json"
+  },
+  {
+    "id": "kaa",
+    "name": "KickAssAnime",
+    "author": "Thekingcrusher",
+    "description": "Sub/dub streaming provider.",
+    "type": "onlinestream-provider",
+    "language": "typescript",
+    "lang": "en",
+    "manifestURI": "https://raw.githubusercontent.com/Thekingcrusher/online-stream-providers/refs/heads/main/kaa/manifest.json"
+  },
+  {
+    "id": "acg-rip-provider",
+    "name": "ACG.RIP",
+    "author": "Bas1874",
+    "description": "ACG.RIP torrent provider.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/ACG.RIP-Torrent-Provider-Seanime/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "animetosho",
+    "name": "Animetosho",
+    "author": "Seanime",
+    "description": "AnimeTosho torrent provider.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/anime-torrent-providers/animetosho/animetosho.json"
+  },
+  {
+    "id": "nyaa",
+    "name": "Nyaa",
+    "author": "Seanime",
+    "description": "Nyaa torrent provider.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/anime-torrent-providers/nyaa/nyaa.json"
+  },
+  {
+    "id": "nyaa-non-eng",
+    "name": "Nyaa (Non-English)",
+    "author": "Seanime",
+    "description": "Nyaa non-English torrents.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/anime-torrent-providers/nyaa/nyaa-non-eng.json"
+  },
+  {
+    "id": "seadex",
+    "name": "SeaDex",
+    "author": "Seanime",
+    "description": "SeaDex high quality torrents.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/5rahim/seanime-extensions/refs/heads/main/anime-torrent-providers/seadex/seadex.json"
+  },
+  {
+    "id": "SubsPlease-Provider",
+    "name": "SubsPlease",
+    "author": "Bas1874",
+    "description": "SubsPlease torrent provider.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/SubsPleaseSeanime/refs/heads/main/src/manifest.json"
+  },
+  {
+    "id": "Tokyo-Toshokan-Provider",
+    "name": "Tokyo Toshokan",
+    "author": "Bas1874",
+    "description": "Tokyo Toshokan torrent provider.",
+    "type": "anime-torrent-provider",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/Bas1874/Tokyotosho-Torrent-Provider-Seanime/main/src/tokyotosho/manifest.json"
+  },
+  {
+    "id": "mangadex-source",
+    "name": "MangaDex Source",
+    "author": "jabifx",
+    "description": "MangaDex custom source.",
+    "type": "custom-source",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/MangaDexSource/manifest.json"
+  },
+  {
+    "id": "mal-unofficial",
+    "name": "MyAnimeList",
+    "author": "jabifx",
+    "description": "MyAnimeList custom source.",
+    "type": "custom-source",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/MAL/manifest.json"
+  },
+  {
+    "id": "simkl",
+    "name": "Simkl",
+    "author": "jabifx",
+    "description": "SIMKL custom source.",
+    "type": "custom-source",
+    "language": "typescript",
+    "lang": "multi",
+    "manifestURI": "https://raw.githubusercontent.com/jabifx/seanime-extensions/master/src/SIMKL/manifest.json"
+  }
+]
