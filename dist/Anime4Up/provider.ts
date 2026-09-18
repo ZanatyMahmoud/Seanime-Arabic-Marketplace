@@ -473,18 +473,61 @@ class Provider {
     throw debugMessage;
   }
 
+  private originOf(url: string): string {
+    const match = (url || "").match(/^(https?:\\/\\/[^/]+)/i);
+    return match ? match[1] : this.baseUrl;
+  }
+
+  private episodeNumberFromLink(title: string, href: string, fallback: number): number {
+    const fromTitle = title.match(/(?:episode|ep|الحلقة)?\\s*([0-9]+(?:\\.[0-9]+)?)/i);
+    if (fromTitle) return Number(fromTitle[1]);
+
+    const fromUrl =
+      href.match(/(?:episode|ep)[-_/]?([0-9]+(?:\\.[0-9]+)?)(?:[-_/]|$|\\?)/i) ||
+      href.match(/[-_/]([0-9]+(?:\\.[0-9]+)?)(?:[-_/]?(?: مترجمة|مدبلجة)?\\/?$|\\/?$)/i);
+
+    return fromUrl ? Number(fromUrl[1]) : fallback;
+  }
+
   async findEpisodes(id: string): Promise<EpisodeDetails[]> {
     const animeUrl = absoluteUrl(this.baseUrl, id);
-    const html = await fetchText(animeUrl, `${this.baseUrl}/`);
+    const pageOrigin = this.originOf(animeUrl);
+    const html = await fetchText(animeUrl, `${pageOrigin}/`);
     const $ = LoadDoc(html);
     const episodes: EpisodeDetails[] = [];
-    $("div.ehover6 > div.episodes-card-title > h3 > a, ul.all-episodes-list li > a").each((index, el) => {
-      const href = absoluteUrl(this.baseUrl, el.attr("href") || "");
-      const title = normalizeWhitespace(el.text());
-      if (!href) return;
-      episodes.push({ id: href, number: parseEpisodeNumber(title, index + 1), url: href, title });
-    });
-    return dedupeBy(episodes, (e) => e.url).sort((a, b) => a.number - b.number);
+
+    const collect = (selector: string) => {
+      $(selector).each((index, el) => {
+        const rawHref = el.attr("href") || "";
+        if (!rawHref || !/\\/episode\\//i.test(rawHref)) return;
+
+        const href = absoluteUrl(pageOrigin, rawHref);
+        const title = normalizeWhitespace(
+          el.attr("title") ||
+          el.find("h1, h2, h3, h4, span").first().text() ||
+          el.text()
+        );
+        if (!href) return;
+
+        const number = this.episodeNumberFromLink(title, href, index + 1);
+        episodes.push({
+          id: href,
+          number,
+          url: href,
+          title: title || `Episode ${number}`,
+        });
+      });
+    };
+
+    collect("div.ehover6 > div.episodes-card-title > h3 > a, ul.all-episodes-list li > a");
+
+    if (!episodes.length) {
+      collect("a[href*='/episode/']");
+    }
+
+    return dedupeBy(episodes, (e) => e.url)
+      .filter((e) => Number.isFinite(e.number) && e.number >= 0)
+      .sort((a, b) => a.number - b.number);
   }
 
   private decodeServerInput(value: string, quality: string): HostServer[] {
