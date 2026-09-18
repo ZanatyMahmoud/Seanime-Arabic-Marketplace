@@ -400,11 +400,22 @@ class Provider {
     const ranked = rankResults(all, opts);
     if (ranked.length) return ranked;
 
-    if (errors.length) {
-      throw errors[errors.length - 1];
+    const debugMessage = errors.length
+      ? errors[errors.length - 1]
+      : "Anime4Up search returned no parseable anime results; site layout may have changed";
+
+    // Manual-search diagnostics: Seanime/Goja formats rejected Promise reasons as map[],
+    // so return a visible synthetic result when there is no media context.
+    if (!opts.media || !opts.media.id) {
+      return [{
+        id: "__anime4up_debug__",
+        title: `[DEBUG] ${debugMessage}`,
+        url: this.baseUrl,
+        subOrDub: "sub",
+      }];
     }
 
-    throw "Anime4Up search returned no parseable anime results; site layout may have changed";
+    throw debugMessage;
   }
 
   async findEpisodes(id: string): Promise<EpisodeDetails[]> {
