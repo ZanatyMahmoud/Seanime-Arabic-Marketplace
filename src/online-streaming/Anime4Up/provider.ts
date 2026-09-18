@@ -294,6 +294,17 @@ class Provider {
     return dedupeBy(out, (s) => s.url);
   }
 
+  private playbackHeaders(serverName: string, serverUrl: string, episodeUrl: string): Record<string, string> {
+    const headers = standardHeaders(episodeUrl);
+    const haystack = `${serverName} ${serverUrl}`.toLowerCase();
+
+    if (haystack.includes("mp4upload")) {
+      headers.Referer = "https://mp4upload.com/";
+    }
+
+    return headers;
+  }
+
   async findEpisodeServer(episode: EpisodeDetails, requestedServer: string): Promise<EpisodeServer> {
     const episodeUrl = episode.url || episode.id;
     if (!episodeUrl) throw new Error("Anime4Up: episode URL is missing");
@@ -311,39 +322,66 @@ class Provider {
     const visibleServers = this.collectVisibleServers(html, episodeUrl);
     const dedupedServers = dedupeBy([...encodedServers, ...visibleServers], (s) => s.url);
 
-    const wanted = requestedServer === "default"
-      ? dedupedServers
-      : dedupedServers.filter((s) =>
-          s.name.toLowerCase().includes(requestedServer.toLowerCase()) ||
-          s.url.toLowerCase().includes(requestedServer.toLowerCase().replace(/[^a-z0-9]/g, ""))
-        );
-
-    if (requestedServer !== "default" && !wanted.length) {
-      throw new Error(`Anime4Up: requested server not found: ${requestedServer}`);
-    }
-
-    const candidates = requestedServer === "default" ? dedupedServers : wanted;
-    const videoSources: VideoSource[] = [];
-    for (const server of candidates.slice(0, 16)) {
+    const extractFrom = async (server: HostServer): Promise<VideoSource[]> => {
       const extracted = await safeExtract(server.url, { referer: episodeUrl, quality: server.quality });
-      videoSources.push(...extracted.map((v) => ({
-        ...v,
-        quality: v.quality === "auto" && server.quality ? server.quality : v.quality,
-        label: v.label || server.name,
-      })));
-    }
+      return dedupeBy(
+        extracted
+          .map((v) => ({
+            ...v,
+            quality: v.quality === "auto" && server.quality ? server.quality : v.quality,
+            label: v.label || server.name,
+          }))
+          .filter((v) => validMediaUrl(v.url)),
+        (v) => v.url,
+      );
+    };
 
-    const directFromPage = directSourcesFromHtml(html, pageOrigin);
-    videoSources.push(...directFromPage);
+    if (requestedServer === "default") {
+      for (const server of dedupedServers.slice(0, 16)) {
+        const sources = await extractFrom(server);
+        if (!sources.length) continue;
 
-    const cleanSources = dedupeBy(videoSources.filter((v) => validMediaUrl(v.url)), (v) => v.url);
-    if (!cleanSources.length) {
+        return {
+          server: server.name || "Anime4Up",
+          headers: this.playbackHeaders(server.name || "", sources[0]?.url || server.url, episodeUrl),
+          videoSources: sources,
+        };
+      }
+
+      const directFromPage = directSourcesFromHtml(html, pageOrigin).filter((v) => validMediaUrl(v.url));
+      if (directFromPage.length) {
+        return {
+          server: "Anime4Up",
+          headers: standardHeaders(episodeUrl),
+          videoSources: dedupeBy(directFromPage, (v) => v.url),
+        };
+      }
+
       throw new Error(`Anime4Up: no playable mp4/m3u8 source found (servers discovered: ${dedupedServers.length})`);
     }
 
+    const wanted = dedupedServers.filter((s) =>
+      s.name.toLowerCase().includes(requestedServer.toLowerCase()) ||
+      s.url.toLowerCase().includes(requestedServer.toLowerCase().replace(/[^a-z0-9]/g, ""))
+    );
+
+    if (!wanted.length) {
+      throw new Error(`Anime4Up: requested server not found: ${requestedServer}`);
+    }
+
+    const videoSources: VideoSource[] = [];
+    for (const server of wanted.slice(0, 8)) {
+      videoSources.push(...await extractFrom(server));
+    }
+
+    const cleanSources = dedupeBy(videoSources, (v) => v.url);
+    if (!cleanSources.length) {
+      throw new Error(`Anime4Up: no playable source for server ${requestedServer}`);
+    }
+
     return {
-      server: requestedServer === "default" ? "Anime4Up" : requestedServer,
-      headers: standardHeaders(episodeUrl),
+      server: requestedServer,
+      headers: this.playbackHeaders(requestedServer, cleanSources[0]?.url || wanted[0].url, episodeUrl),
       videoSources: cleanSources,
     };
   }
