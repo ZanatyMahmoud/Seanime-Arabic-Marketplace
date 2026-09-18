@@ -1,0 +1,33 @@
+{
+  "id": "arabic-witanime",
+  "name": "WitAnime",
+  "description": "Arabic anime streaming provider for Seanime (WitAnime).",
+  "version": "0.1.1",
+  "author": "ZanatyMahmoud",
+  "type": "onlinestream-provider",
+  "language": "typescript",
+  "lang": "ar",
+  "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/WitAnime/manifest-v0.1.1.json",
+  "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/WitAnime/provider-v0.1.1.ts",
+  "workingTag": false,
+  "brokenTag": false,
+  "deprecatedTag": false,
+  "userConfig": {
+    "requiresConfig": false,
+    "version": 1,
+    "fields": [
+      {
+        "name": "baseUrl",
+        "label": "Base URL",
+        "type": "text",
+        "default": "https://witanime.cyou"
+      }
+    ]
+  },
+  "metadata": {
+    "fallbackDomains": [
+      "https://witanime.cyou"
+    ],
+    "verification": "unverified-until-live-stream-test"
+  }
+}
