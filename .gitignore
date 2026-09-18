@@ -1,0 +1,4 @@
+node_modules/
+*.log
+.health-cache.json
+.DS_Store
