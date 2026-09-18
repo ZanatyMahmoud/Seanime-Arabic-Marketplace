@@ -1,0 +1,28 @@
+name: Check Upstream Marketplace
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run marketplace
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm run validate
+      - name: Show upstream changes without committing them
+        run: git diff -- marketplace/marketplace.json marketplace/upstream-latest.json || true
+      - uses: actions/upload-artifact@v6
+        with:
+          name: marketplace-refresh-candidate
+          path: |
+            marketplace/marketplace.json
+            marketplace/upstream-latest.json
+          if-no-files-found: ignore
