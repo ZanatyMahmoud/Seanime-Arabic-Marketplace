@@ -169,10 +169,17 @@ function qualityFromText(value: string, fallback = "auto"): string {
   return match ? `${match[1]}p` : fallback;
 }
 
+function mediaPath(url: string): string {
+  const normalized = String(url || "").replace(/\\\//g, "/");
+  const match = normalized.match(/^https?:\/\/[^/?#]+([^?#]*)/i);
+  return (match?.[1] || "").toLowerCase();
+}
+
 function videoType(url: string): VideoSourceType {
-  const clean = url.split("?")[0].toLowerCase();
-  if (clean.endsWith(".m3u8")) return "m3u8";
-  if (clean.endsWith(".mp4") || clean.includes(".mp4/")) return "mp4";
+  const path = mediaPath(url);
+  if (!path) return "unknown";
+  if (path.endsWith(".m3u8") || path.includes(".m3u8/")) return "m3u8";
+  if (path.endsWith(".mp4") || path.includes(".mp4/")) return "mp4";
   return "unknown";
 }
 
@@ -181,7 +188,10 @@ function source(url: string, quality = "auto", label?: string): VideoSource {
 }
 
 function validMediaUrl(url: string): boolean {
-  return /^https?:\/\//i.test(url) && (videoType(url) !== "unknown" || /(?:manifest|playlist|stream|video)/i.test(url));
+  if (!/^https?:\/\//i.test(url)) return false;
+  if (videoType(url) !== "unknown") return true;
+  const path = mediaPath(url);
+  return /(?:^|\/)(?:manifest|playlist|stream|video)(?:[\/_\-.]|$)/i.test(path);
 }
 
 async function expandHls(url: string, headers: Record<string, string>): Promise<VideoSource[]> {
@@ -259,19 +269,84 @@ async function extractOkRu(url: string, ctx: ExtractContext): Promise<VideoSourc
   } catch { return []; }
 }
 
+function unbasePacker(value: string, base: number): number {
+  if (base >= 2 && base <= 36) {
+    const parsed = parseInt(value, base);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  const selector = base > 62 ? 95 : base > 54 ? 62 : base > 52 ? 54 : 52;
+  const alphabets: Record<number, string> = {
+    52: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP",
+    54: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR",
+    62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    95: " !\\\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+  };
+  const alphabet = alphabets[selector] || alphabets[52];
+  let out = 0;
+  const chars = value.split("").reverse();
+  for (let i = 0; i < chars.length; i += 1) {
+    const digit = alphabet.indexOf(chars[i]);
+    out += Math.pow(base, i) * (digit >= 0 ? digit : 0);
+  }
+  return out;
+}
+
+function unpackPacker(script: string): string[] {
+  if (!/eval\(function\(p,a,c,k,e,[rd]?/im.test(script)) return [];
+  const extract = /}\s*\('(.*)',\s*(\d+),\s*(\d+),\s*'(.*?)'\.split\('\|'\)/gim;
+  const out: string[] = [];
+  for (const match of script.matchAll(extract)) {
+    const payload = match[1];
+    const radix = Number(match[2]) || 10;
+    const count = Number(match[3]) || 0;
+    const symtab = match[4].split("|");
+    if (!payload || !count || symtab.length !== count) continue;
+    out.push(payload.replace(/\b\w+\b/g, (word) => {
+      const index = unbasePacker(word, radix);
+      return symtab[index] || word;
+    }));
+  }
+  return out;
+}
+
+function extractPlayerSrc(script: string): string {
+  const candidates = [
+    script.match(/\.src\(\s*["']([^"']+)["']\s*\)/i)?.[1] || "",
+    script.match(/\.src\(\s*\{[\s\S]{0,300}?src\s*:\s*["']([^"']+)["']/i)?.[1] || "",
+    script.match(/\bsrc\s*:\s*["']([^"']+\.mp4(?:\?[^"']*)?)["']/i)?.[1] || "",
+  ].filter(Boolean);
+  return candidates[0] ? candidates[0].replace(/\\\//g, "/") : "";
+}
+
 async function extractMp4Upload(url: string, ctx: ExtractContext): Promise<VideoSource[]> {
-  const html = await fetchText(url, ctx.referer);
-  const urls = Array.from(html.matchAll(/https?:\\?\/\\?\/[^"'\s]+?\.mp4(?:\?[^"'\s]*)?/gi))
-    .map((m) => m[0].replace(/\\\//g, "/"));
-  return dedupeBy(urls.map((u) => source(u, qualityFromText(u), "MP4Upload")), (x) => x.url);
+  const html = await fetchText(url, "https://mp4upload.com/");
+  const scripts = Array.from(html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)).map((m) => m[1]);
+  const out: VideoSource[] = [];
+
+  for (const block of scripts) {
+    const candidates = /player\.src/i.test(block)
+      ? [block]
+      : unpackPacker(block);
+
+    for (const script of candidates) {
+      const videoUrl = extractPlayerSrc(script);
+      if (!videoUrl || videoType(videoUrl) !== "mp4") continue;
+      const height = script.match(/\WHEIGHT=(\d+)/i)?.[1] || "";
+      out.push(source(videoUrl, height ? `${height}p` : qualityFromText(videoUrl), "MP4Upload"));
+    }
+  }
+
+  return dedupeBy(out.filter((x) => validMediaUrl(x.url)), (x) => x.url);
 }
 
 async function extractGenericMedia(url: string, ctx: ExtractContext): Promise<VideoSource[]> {
   const html = await fetchText(url, ctx.referer);
   const base = url.substring(0, url.lastIndexOf("/"));
-  const fromTags = directSourcesFromHtml(html, base);
-  const regexUrls = Array.from(html.matchAll(/https?:\\?\/\\?\/[^"'\s]+?(?:\.m3u8|\.mp4)(?:\?[^"'\s]*)?/gi))
-    .map((m) => m[0].replace(/\\\//g, "/"));
+  const fromTags = directSourcesFromHtml(html, base).filter((x) => validMediaUrl(x.url));
+  const regexUrls = Array.from(html.matchAll(/https?:\\?\/\\?\/[^"'\s/]+\/[^"'\s]*?(?:\.m3u8|\.mp4)(?:\?[^"'\s]*)?/gi))
+    .map((m) => m[0].replace(/\\\//g, "/"))
+    .filter((u) => validMediaUrl(u));
   return dedupeBy([...fromTags, ...regexUrls.map((u) => source(u, qualityFromText(u), "mirror"))], (x) => x.url);
 }
 
