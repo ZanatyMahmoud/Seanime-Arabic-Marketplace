@@ -474,17 +474,17 @@ class Provider {
   }
 
   private originOf(url: string): string {
-    const match = (url || "").match(/^(https?:\\/\\/[^/]+)/i);
+    const match = (url || "").match(/^(https?:\/\/[^/]+)/i);
     return match ? match[1] : this.baseUrl;
   }
 
   private episodeNumberFromLink(title: string, href: string, fallback: number): number {
-    const fromTitle = title.match(/(?:episode|ep|الحلقة)?\\s*([0-9]+(?:\\.[0-9]+)?)/i);
+    const fromTitle = title.match(/(?:episode|ep|الحلقة)?\s*([0-9]+(?:\.[0-9]+)?)/i);
     if (fromTitle) return Number(fromTitle[1]);
 
     const fromUrl =
-      href.match(/(?:episode|ep)[-_/]?([0-9]+(?:\\.[0-9]+)?)(?:[-_/]|$|\\?)/i) ||
-      href.match(/[-_/]([0-9]+(?:\\.[0-9]+)?)(?:[-_/]?(?: مترجمة|مدبلجة)?\\/?$|\\/?$)/i);
+      href.match(/(?:episode|ep)[-_/]?([0-9]+(?:\.[0-9]+)?)(?:[-_/]|$|\?)/i) ||
+      href.match(/[-_/]([0-9]+(?:\.[0-9]+)?)(?:[-_/]?(?: مترجمة|مدبلجة)?\/?$|\/?$)/i);
 
     return fromUrl ? Number(fromUrl[1]) : fallback;
   }
@@ -499,7 +499,7 @@ class Provider {
     const collect = (selector: string) => {
       $(selector).each((index, el) => {
         const rawHref = el.attr("href") || "";
-        if (!rawHref || !/\\/episode\\//i.test(rawHref)) return;
+        if (!rawHref || !/\/episode\//i.test(rawHref)) return;
 
         const href = absoluteUrl(pageOrigin, rawHref);
         const title = normalizeWhitespace(
