@@ -3,9 +3,9 @@
 Marketplace مخصص لـ **Seanime** يجمع إضافات المجتمع مع إضافات عربية يجري تطويرها واختبارها هنا.
 
 > **Repository target:** `https://github.com/ZanatyMahmoud/Seanime-Arabic-Marketplace`  
-> **Marketplace URL after publishing:** `https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/marketplace/marketplace.json`
+> **Marketplace URL:** `https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/marketplace/marketplace.json`
 
-**Important:** the repository URL above is the configured publication target. It does not become usable until the GitHub repository actually exists and these files are pushed to `main`.
+**Status:** Publicly published and validated by GitHub Actions.
 
 ## Install in Seanime
 
