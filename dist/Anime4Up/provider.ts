@@ -328,7 +328,7 @@ class Provider {
       lower.includes("attention required") ||
       lower.includes("cloudflare")
     ) {
-      throw new Error(`Anime4Up search blocked by Cloudflare/challenge at ${url}`);
+      throw `Anime4Up search blocked by Cloudflare/challenge at ${url}`;
     }
   }
 
@@ -401,10 +401,10 @@ class Provider {
     if (ranked.length) return ranked;
 
     if (errors.length) {
-      throw new Error(errors[errors.length - 1]);
+      throw errors[errors.length - 1];
     }
 
-    throw new Error("Anime4Up search returned no parseable anime results; site layout may have changed");
+    throw "Anime4Up search returned no parseable anime results; site layout may have changed";
   }
 
   async findEpisodes(id: string): Promise<EpisodeDetails[]> {
