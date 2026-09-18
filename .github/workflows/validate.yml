@@ -16,3 +16,15 @@ jobs:
       - run: npm run typecheck
       - run: npm run marketplace
       - run: npm run validate
+      - name: Seanime Goja runtime smoke test
+        run: |
+          tmpdir="$(mktemp -d)"
+          cp scripts/seanime-runtime-smoke.go "$tmpdir/main.go"
+          cd "$tmpdir"
+          go mod init smoke
+          go get github.com/evanw/esbuild/pkg/api@latest github.com/dop251/goja@latest
+          go run . \
+            "$GITHUB_WORKSPACE/dist/AnimeBlkom/provider.ts" \
+            "$GITHUB_WORKSPACE/dist/Anime4Up/provider.ts" \
+            "$GITHUB_WORKSPACE/dist/WitAnime/provider.ts" \
+            "$GITHUB_WORKSPACE/dist/Anime3rb/provider.ts"
