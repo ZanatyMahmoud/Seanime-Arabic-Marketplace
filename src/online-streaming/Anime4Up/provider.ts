@@ -11,27 +11,92 @@ class Provider {
     return ["default", "VidYard", "OK.ru", "MP4Upload", "Uqload", "VOE", "4Shared", "Dood", "VidBom", "StreamWish", "GDrivePlayer"];
   }
 
+  private assertSearchPage(html: string, url: string): void {
+    const lower = html.toLowerCase();
+    if (
+      lower.includes("cf-chl-") ||
+      lower.includes("challenge-platform") ||
+      lower.includes("just a moment") ||
+      lower.includes("attention required") ||
+      lower.includes("cloudflare")
+    ) {
+      throw new Error(`Anime4Up search blocked by Cloudflare/challenge at ${url}`);
+    }
+  }
+
+  private parseSearchResults(html: string): SearchResult[] {
+    const $ = LoadDoc(html);
+    const out: SearchResult[] = [];
+
+    const pushFromLink = (link: DocSelection, container?: DocSelection) => {
+      const rawHref = link.attr("href") || "";
+      const href = absoluteUrl(this.baseUrl, rawHref);
+      if (!href || !/\/anime\//i.test(href)) return;
+
+      const scope = container || link;
+      const img = scope.find("img").first();
+      const heading = scope.find("h1, h2, h3, h4, .anime-card-title, .title").first();
+      const title = normalizeWhitespace(
+        img.attr("alt") ||
+        link.attr("title") ||
+        heading.text() ||
+        link.text() ||
+        scope.text()
+      );
+      if (!title) return;
+
+      const dubbed = /مدبلج|dub(?:bed)?/i.test(title);
+      out.push({
+        id: href,
+        title,
+        url: href,
+        subOrDub: dubbed ? "dub" : "sub",
+      });
+    };
+
+    $("div.anime-list-content div.anime-card-poster > div.hover").each((_i, el) => {
+      pushFromLink(el.find("a").first(), el);
+    });
+
+    if (!out.length) {
+      $("a[href*='/anime/']").each((_i, link) => {
+        pushFromLink(link, link);
+      });
+    }
+
+    return dedupeBy(out, (x) => x.id || x.url);
+  }
+
   async search(opts: SearchOptions): Promise<SearchResult[]> {
     const all: SearchResult[] = [];
+    const errors: string[] = [];
+
     for (const query of buildCandidateQueries(opts, 4)) {
       const url = `${this.baseUrl}/?search_param=animes&s=${encodeURIComponent(query)}`;
       try {
         const html = await fetchText(url, `${this.baseUrl}/`);
-        const $ = LoadDoc(html);
-        $("div.anime-list-content div.anime-card-poster > div.hover").each((_i, el) => {
-          const link = el.find("a").first();
-          const img = el.find("img").first();
-          const href = absoluteUrl(this.baseUrl, link.attr("href") || "");
-          const title = normalizeWhitespace(img.attr("alt") || link.attr("title") || el.text());
-          if (href && title) all.push({ id: href, title, url: href, subOrDub: "sub" });
-        });
+        this.assertSearchPage(html, url);
+
+        const parsed = this.parseSearchResults(html);
+        all.push(...parsed);
+
         const ranked = rankResults(all, opts, 5);
         if (ranked[0] && similarity(ranked[0].title, query) >= 0.75) break;
       } catch (error) {
-        console.warn(`Anime4Up search failed for ${query}: ${String(error)}`);
+        const message = `Anime4Up search failed for "${query}": ${String(error)}`;
+        console.error(message);
+        errors.push(message);
       }
     }
-    return rankResults(all, opts);
+
+    const ranked = rankResults(all, opts);
+    if (ranked.length) return ranked;
+
+    if (errors.length) {
+      throw new Error(errors[errors.length - 1]);
+    }
+
+    throw new Error("Anime4Up search returned no parseable anime results; site layout may have changed");
   }
 
   async findEpisodes(id: string): Promise<EpisodeDetails[]> {
