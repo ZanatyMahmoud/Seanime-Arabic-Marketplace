@@ -326,7 +326,7 @@ class Provider {
       lower.includes("challenge-platform") ||
       lower.includes("just a moment") ||
       lower.includes("attention required") ||
-      lower.includes("cloudflare")
+      lower.includes("verify you are human")
     ) {
       throw `Anime4Up search blocked by Cloudflare/challenge at ${url}`;
     }
@@ -375,11 +375,66 @@ class Provider {
     return dedupeBy(out, (x) => x.id || x.url);
   }
 
+  private slugifyQuery(query: string): string {
+    return query
+      .trim()
+      .toLowerCase()
+      .replace(/['’]/g, "")
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9\u0600-\u06ff]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-+/g, "-");
+  }
+
+  private async tryDirectAnimePage(query: string): Promise<SearchResult | null> {
+    const slug = this.slugifyQuery(query);
+    if (!slug) return null;
+
+    const url = `${this.baseUrl}/anime/${slug}/`;
+    try {
+      const html = await fetchText(url, `${this.baseUrl}/`);
+      this.assertSearchPage(html, url);
+      const $ = LoadDoc(html);
+
+      const title = normalizeWhitespace(
+        $("h1.anime-details-title").first().text() ||
+        $("meta[property='og:title']").first().attr("content") ||
+        $("title").first().text()
+      );
+
+      const hasAnimeStructure =
+        $("h1.anime-details-title").length > 0 ||
+        $("ul.all-episodes-list li > a").length > 0 ||
+        $("div.ehover6 > div.episodes-card-title > h3 > a").length > 0;
+
+      if (!hasAnimeStructure || !title) return null;
+
+      const score = similarity(title, query);
+      if (score < 0.45 && !normalizeTitle(title).includes(normalizeTitle(query))) return null;
+
+      return {
+        id: url,
+        title,
+        url,
+        subOrDub: /مدبلج|dub(?:bed)?/i.test(title) ? "dub" : "sub",
+      };
+    } catch (_error) {
+      return null;
+    }
+  }
+
   async search(opts: SearchOptions): Promise<SearchResult[]> {
     const all: SearchResult[] = [];
     const errors: string[] = [];
 
     for (const query of buildCandidateQueries(opts, 4)) {
+      const direct = await this.tryDirectAnimePage(query);
+      if (direct) {
+        all.push(direct);
+        const rankedDirect = rankResults(all, opts, 5);
+        if (rankedDirect[0] && similarity(rankedDirect[0].title, query) >= 0.75) break;
+      }
+
       const url = `${this.baseUrl}/?search_param=animes&s=${encodeURIComponent(query)}`;
       try {
         const html = await fetchText(url, `${this.baseUrl}/`);
