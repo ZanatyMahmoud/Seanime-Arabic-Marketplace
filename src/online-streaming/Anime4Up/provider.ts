@@ -318,8 +318,13 @@ class Provider {
           s.url.toLowerCase().includes(requestedServer.toLowerCase().replace(/[^a-z0-9]/g, ""))
         );
 
+    if (requestedServer !== "default" && !wanted.length) {
+      throw new Error(`Anime4Up: requested server not found: ${requestedServer}`);
+    }
+
+    const candidates = requestedServer === "default" ? dedupedServers : wanted;
     const videoSources: VideoSource[] = [];
-    for (const server of (wanted.length ? wanted : dedupedServers).slice(0, 16)) {
+    for (const server of candidates.slice(0, 16)) {
       const extracted = await safeExtract(server.url, { referer: episodeUrl, quality: server.quality });
       videoSources.push(...extracted.map((v) => ({
         ...v,
