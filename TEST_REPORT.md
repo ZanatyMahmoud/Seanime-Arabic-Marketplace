@@ -12,7 +12,14 @@
 | Forbidden runtime dependency audit | PASS |
 | Required provider methods | PASS (`getSettings`, `getEpisodeServers`, `search`, `findEpisodes`, `findEpisodeServer`) |
 
-## Live validation
+## Published repository validation
+
+- Public repository: PASS
+- Raw marketplace JSON: PASS
+- Raw payloads for AnimeBlkom, Anime4Up, WitAnime and Anime3rb: PASS
+- GitHub Actions build/typecheck/marketplace/validate: PASS
+
+## Live provider validation
 
 The four Arabic providers remain `workingTag=false`. A provider is not promoted to working until a live test verifies search, episode enumeration, and a playable MP4/M3U8 URL.
 
