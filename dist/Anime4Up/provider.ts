@@ -544,32 +544,109 @@ class Provider {
     }
   }
 
-  async findEpisodeServer(episode: EpisodeDetails, requestedServer: string): Promise<EpisodeServer> {
-    const html = await fetchText(episode.url, `${this.baseUrl}/`);
+  private serverNameFromUrl(url: string): string {
+    const lower = url.toLowerCase();
+    if (lower.includes("ok.ru")) return "OK.ru";
+    if (lower.includes("mp4upload")) return "MP4Upload";
+    if (lower.includes("uqload")) return "Uqload";
+    if (lower.includes("voe")) return "VOE";
+    if (lower.includes("4shared")) return "4Shared";
+    if (lower.includes("dood")) return "Dood";
+    if (lower.includes("vidbom")) return "VidBom";
+    if (lower.includes("streamwish")) return "StreamWish";
+    if (lower.includes("vidyard")) return "VidYard";
+    if (lower.includes("gdrive")) return "GDrivePlayer";
+    try {
+      return url.replace(/^https?:\/\//i, "").split("/")[0] || "mirror";
+    } catch {
+      return "mirror";
+    }
+  }
+
+  private collectVisibleServers(html: string, pageUrl: string): HostServer[] {
     const $ = LoadDoc(html);
-    const servers: HostServer[] = [
+    const out: HostServer[] = [];
+    const pageOrigin = this.originOf(pageUrl);
+    const push = (raw: string, quality = "auto", name = "") => {
+      const value = normalizeWhitespace(raw || "");
+      if (!value || /^(javascript:|#)/i.test(value)) return;
+      const url = absoluteUrl(pageOrigin, value);
+      if (!url || url === pageUrl) return;
+      if (!/^https?:\/\//i.test(url)) return;
+      out.push({ name: name || this.serverNameFromUrl(url), url, quality });
+    };
+
+    $(".WatchServersEmbed iframe[src], iframe[src], video[src], source[src]").each((_i, el) => {
+      push(el.attr("src") || "", el.attr("data-quality") || el.attr("label") || "auto");
+    });
+
+    $("[data-src], [data-url], [data-link], [data-embed]").each((_i, el) => {
+      const name = normalizeWhitespace(el.attr("data-name") || el.attr("title") || el.text());
+      push(
+        el.attr("data-src") || el.attr("data-url") || el.attr("data-link") || el.attr("data-embed") || "",
+        el.attr("data-quality") || "auto",
+        name,
+      );
+    });
+
+    $(".WatchServersEmbed a[href], .servers a[href], [class*='server'] a[href]").each((_i, el) => {
+      push(el.attr("href") || "", el.attr("data-quality") || "auto", normalizeWhitespace(el.text()));
+    });
+
+    const knownHostUrls = Array.from(html.matchAll(/https?:\\?\/\\?\/[^"'\s<>]+/gi))
+      .map((m) => m[0].replace(/\\\//g, "/"))
+      .filter((url) => /ok\.ru|mp4upload|uqload|voe|4shared|dood|vidbom|streamwish|vidyard|gdrive/i.test(url));
+
+    for (const url of knownHostUrls) push(url);
+
+    return dedupeBy(out, (s) => s.url);
+  }
+
+  async findEpisodeServer(episode: EpisodeDetails, requestedServer: string): Promise<EpisodeServer> {
+    const episodeUrl = episode.url || episode.id;
+    if (!episodeUrl) throw new Error("Anime4Up: episode URL is missing");
+
+    const pageOrigin = this.originOf(episodeUrl);
+    const html = await fetchText(episodeUrl, `${pageOrigin}/`);
+    const $ = LoadDoc(html);
+
+    const encodedServers: HostServer[] = [
       ...this.decodeServerInput($(".WatchServersEmbed form input[name='watch_fhd']").first().attr("value") || "", "1080p"),
       ...this.decodeServerInput($(".WatchServersEmbed form input[name='watch_hd']").first().attr("value") || "", "720p"),
       ...this.decodeServerInput($(".WatchServersEmbed form input[name='watch_SD']").first().attr("value") || "", "480p"),
     ];
-    const dedupedServers = dedupeBy(servers, (s) => `${s.name}|${s.url}`);
+
+    const visibleServers = this.collectVisibleServers(html, episodeUrl);
+    const dedupedServers = dedupeBy([...encodedServers, ...visibleServers], (s) => s.url);
+
     const wanted = requestedServer === "default"
       ? dedupedServers
-      : dedupedServers.filter((s) => s.name.toLowerCase().includes(requestedServer.toLowerCase()));
+      : dedupedServers.filter((s) =>
+          s.name.toLowerCase().includes(requestedServer.toLowerCase()) ||
+          s.url.toLowerCase().includes(requestedServer.toLowerCase().replace(/[^a-z0-9]/g, ""))
+        );
+
     const videoSources: VideoSource[] = [];
-    for (const server of (wanted.length ? wanted : dedupedServers).slice(0, 12)) {
-      const extracted = await safeExtract(server.url, { referer: episode.url, quality: server.quality });
+    for (const server of (wanted.length ? wanted : dedupedServers).slice(0, 16)) {
+      const extracted = await safeExtract(server.url, { referer: episodeUrl, quality: server.quality });
       videoSources.push(...extracted.map((v) => ({
         ...v,
         quality: v.quality === "auto" && server.quality ? server.quality : v.quality,
         label: v.label || server.name,
       })));
     }
+
+    const directFromPage = directSourcesFromHtml(html, pageOrigin);
+    videoSources.push(...directFromPage);
+
     const cleanSources = dedupeBy(videoSources.filter((v) => validMediaUrl(v.url)), (v) => v.url);
-    if (!cleanSources.length) throw new Error("Anime4Up: no playable mp4/m3u8 source found");
+    if (!cleanSources.length) {
+      throw new Error(`Anime4Up: no playable mp4/m3u8 source found (servers discovered: ${dedupedServers.length})`);
+    }
+
     return {
       server: requestedServer === "default" ? "Anime4Up" : requestedServer,
-      headers: standardHeaders(episode.url),
+      headers: standardHeaders(episodeUrl),
       videoSources: cleanSources,
     };
   }
