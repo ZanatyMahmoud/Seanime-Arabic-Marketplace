@@ -1,0 +1,6 @@
+{
+  "primary": "https://raw.githubusercontent.com/SyntaxSama/seanime-marketplace/refs/heads/main/plugins.json",
+  "mirrorRepository": "Seanime-contributions/seanime-marketplace",
+  "fallback": "marketplace/upstream-seed.json",
+  "note": "The Bas1874 Marketplace JSON is intentionally not re-hosted; its README requires that JSON to remain hosted in the original repository."
+}
