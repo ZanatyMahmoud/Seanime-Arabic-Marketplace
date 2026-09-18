@@ -1,0 +1,35 @@
+{
+  "id": "arabic-animeblkom",
+  "name": "AnimeBlkom",
+  "description": "Arabic anime streaming provider for Seanime (AnimeBlkom).",
+  "version": "0.1.1",
+  "author": "ZanatyMahmoud",
+  "type": "onlinestream-provider",
+  "language": "typescript",
+  "lang": "ar",
+  "manifestURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/src/online-streaming/AnimeBlkom/manifest-v0.1.1.json",
+  "payloadURI": "https://raw.githubusercontent.com/ZanatyMahmoud/Seanime-Arabic-Marketplace/main/dist/AnimeBlkom/provider-v0.1.1.ts",
+  "workingTag": false,
+  "brokenTag": false,
+  "deprecatedTag": false,
+  "userConfig": {
+    "requiresConfig": false,
+    "version": 1,
+    "fields": [
+      {
+        "name": "baseUrl",
+        "label": "Base URL",
+        "type": "text",
+        "default": "https://animeblkom.net"
+      }
+    ]
+  },
+  "metadata": {
+    "fallbackDomains": [
+      "https://animeblkom.net",
+      "https://animeblkom.tv",
+      "https://blkom.com"
+    ],
+    "verification": "unverified-until-live-stream-test"
+  }
+}
